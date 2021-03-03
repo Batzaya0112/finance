@@ -1,89 +1,155 @@
 
 //Дэлгэцтэй ажиллах 
-var uiController = (function()
-{
-      var DOMstrings = {
-        inputType: ".add__type", 
-        inputDescription: ".add__description",
-        inputValue: ".add__value",
-        addBtn: ".add__btn"
-      };
+var uiController = (function () {
+  var DOMstrings = {
+    inputType: ".add__type",
+    inputDescription: ".add__description",
+    inputValue: ".add__value",
+    addBtn: ".add__btn",
+    incomeList: ".income__list",
+    expenseList: ".expenses__list"
+  };
+  return {
+    getInput: function () {
       return {
-        getInput: function(){
-         return{
-           type: document.querySelector(DOMstrings.inputType).value,
-           description: document.querySelector(DOMstrings.inputDescription).value,
-           value: document.querySelector(DOMstrings.inputValue).value
-         }
-        },
-        getDOMstrings: function(){
-          return DOMstrings;
-        }
+        type: document.querySelector(DOMstrings.inputType).value,
+        description: document.querySelector(DOMstrings.inputDescription).value,
+        value: parseInt(document.querySelector(DOMstrings.inputValue).value)
       }
-})(); 
+    },
+    getDOMstrings: function () {
+      return DOMstrings;
+    },
+
+    clearFeilds: function(){
+      var fields = document.querySelectorAll(DOMstrings.inputDescription + ", "  + DOMstrings.inputValue);
+
+      //list to array
+       var fieldsArr = Array.prototype.slice.call(fields);
+       fieldsArr.forEach(function(el, index, array){
+         el.value = "";
+       });
+
+      fieldsArr[0].focus();
+
+      // for(var i = 0; i < fiedlsArr.length; i++){
+      //   fiedlsArr[i].value = "";
+      // }
+
+    },
+
+    addListItem: function (item, type) {
+      //Orlogo zarlagiin elementiig aguulsam HTML-iig beltgene.
+      var html, list;
+      if (type == 'inc') {
+        list = DOMstrings.incomeList;
+        html = '<div class="item clearfix" id="income-%id%"><div div class="item__description" >%description%</div><div div class="right clearfix" ><div class="item__value">+ %value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div >';
+      } else {
+        list = DOMstrings.expenseList;
+        html = '<div class="item clearfix" id="expense-%id%"><div div class="item__description" >%description%</div><div class="right clearfix"><div class="item__value">- %value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div> ';
+      }
+      //Ter HTM dotroo orlogo zarlagiin utguudiig replace ashiglan uurchulj ugnu.
+
+      html = html.replace('%d%', item.id);
+      html = html.replace('%description%', item.description);
+      html = html.replace('%value%', item.value);
+      //Beltgesen HTML ee DOM ruu hiij ugnu
+      document.querySelector(list).insertAdjacentHTML('beforeend', html);
+    }
+
+  }
+})();
 
 
 //Санхүүтай ажиллах
-var financeController = (function(){
+var financeController = (function () {
 
-    var data = {
-      allItems: {
-        inc: [],
-        exp: []
-      },
-      totals:{
-        inc: 0,
-        exp: 0
+  var data = {
+    items: {
+      inc: [],
+      exp: []
+    },
+    totals: {
+      inc: 0,
+      exp: 0
+    }
+  }
+
+  var Income = function (id, description, value) {
+    this.id = id;
+    this.description = description;
+    this.value = value;
+  }
+  var Expense = function (id, description, value) {
+    this.id = id;
+    this.description = description;
+    this.value = value;
+  }
+
+  return {
+    addItem: function (type, description, value) {
+      var item, id;
+      if (data.items[type].length == 0) {
+        id = 1;
+      } else {
+        id = (data.items[type][data.items[type].length - 1]).id + 1;
       }
+
+      if (type == 'inc') {
+        item = new Income(id, description, value);
+      } else {
+        item = new Expense(id, description, value);
+      }
+
+      data.items[type].push(item);
+      return item;
+    },
+    seeData: function(){
+      return data;
     }
-   
-    var Income = function(id, description, value){
-      this.id = id;
-      this.description = description;
-      this.value = value;
-    }
-    var Expense = function(id, description, value){
-      this.id = id;
-      this.description = description;
-      this.value = value;
-    }
+  }
 })();
 
 //eventListner bolon zavsriin code
-var appController = (function(uiController, financeController)
-{
-  
-  var controllerAddItem = function(){
-      // 1. oruulah ugugdliih delgetsees olj avna.
-      console.log(uiController.getInput());
-      // 2. Olj avsan ugugdluuddee sankhuugiin controllert damjuulj tend khadgalna.
+var appController = (function (uiController, financeController) {
 
-      // 3. Olj avsan ugugdluudee veb deerkh tokhirokh khesegt n gargana.
+    var controllerAddItem = function () {
+    // 1. oruulah ugugdliih delgetsees olj avna.
+    var input = uiController.getInput();
+    if(input.description != "" && input.value != ""){
+        // 2. Olj avsan ugugdluuddee sankhuugiin controllert damjuulj tend khadgalna.
+        var item = financeController.addItem(
+          input.type, 
+          input.description, 
+          input.value);
+          // 3. Olj avsan ugugdluudee veb deerkh tokhirokh khesegt n gargana.
+          uiController.addListItem(item, input.type);
+          uiController.clearFeilds();
+    }
+    // 4. Tusviig tootsoolno/
 
-      // 4. Tusviig tootsoolno/
-    
-      // 5. Etssiin uldegdel, tootsoog delgetseng gargana.
-      
+    // 5. Etssiin uldegdel, tootsoog delgetseng gargana.
+
   }
 
-   var  setupEventListeners = function(){
-      var DOM = uiController.getDOMstrings();
-      document.querySelector(DOM.addBtn).addEventListener('click', function(){
+  var setupEventListeners = function () {
+    var DOM = uiController.getDOMstrings();
+    document.querySelector(DOM.addBtn).addEventListener('click', function () {
+      controllerAddItem();
+    });
+
+    document.addEventListener('keypress', function (event) {
+      if (event.keyCode == 13 || event.which == 13) {
         controllerAddItem();
-      });
-
-      document.addEventListener('keypress', function(event){
-        if(event.keyCode == 13 || event.which == 13){
-          controllerAddItem();
       }
-      });
-   }
-   return {
-     init: function(){
+    });
+  }
+  return {
+    init: function () {
       setupEventListeners();
-     }
-   }
+    }
+  }
 
-})(uiController, financeController); 
+})(uiController, financeController);
 
 appController.init();
