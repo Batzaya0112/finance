@@ -72,7 +72,9 @@ var financeController = (function () {
     totals: {
       inc: 0,
       exp: 0
-    }
+    },
+    tusuv: 0,
+    huvi: 0
   }
 
   var Income = function (id, description, value) {
@@ -85,8 +87,32 @@ var financeController = (function () {
     this.description = description;
     this.value = value;
   }
-
+  var calculateTotal = function(type){
+    var sum = 0;
+    data.items[type].forEach(function(el){
+      sum = sum + el.value;
+    });
+    data.totals[type] = sum;
+  }
   return {
+    tusuvTootsooloh: function(){
+        //Niit orlogo, zarlagiig tootsoolno
+        calculateTotal('inc');
+        calculateTotal('exp');
+        //Tusviig shineer tootsoolno
+        data.tusuv = data.totals.inc - data.totals.exp;
+        // Orlogo zarlagiin huviig tootsoolno
+        data.huvi = Math.round((data.totals.exp / data.totals.inc) * 100);
+
+    },
+    tusviigAvah: function(){
+        return {
+          tusuv: data.tusuv,
+          huvi: data.huvi,
+          totalInc: data.totals.inc,
+          totalExp: data.totals.exp
+        }
+    },
     addItem: function (type, description, value) {
       var item, id;
       if (data.items[type].length == 0) {
@@ -127,8 +153,13 @@ var appController = (function (uiController, financeController) {
           uiController.clearFeilds();
     }
     // 4. Tusviig tootsoolno/
+    financeController.tusuvTootsooloh();
 
     // 5. Etssiin uldegdel, tootsoog delgetseng gargana.
+    var tusuv = financeController.tusviigAvah();
+
+    // 6. Tusviin tootsoog delgetsend gargana.
+    console.log(tusuv);
 
   }
 
