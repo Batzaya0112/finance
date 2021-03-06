@@ -7,7 +7,11 @@ var uiController = (function () {
     inputValue: ".add__value",
     addBtn: ".add__btn",
     incomeList: ".income__list",
-    expenseList: ".expenses__list"
+    expenseList: ".expenses__list",
+    tusuvLabel: ".budget__value",
+    incomeLabel: ".budget__income--value",
+    expeseLabel: ".budget__expenses--value",
+    percentageLabel: ".budget__expenses--percentage"
   };
   return {
     getInput: function () {
@@ -38,6 +42,22 @@ var uiController = (function () {
 
     },
 
+    tusviigUzuuleh: function(tusuv){
+
+      document.querySelector(DOMstrings.tusuvLabel).textContent = tusuv.tusuv;
+      document.querySelector(DOMstrings.incomeLabel).textContent = tusuv.totalInc;
+      document.querySelector(DOMstrings.expeseLabel).textContent = tusuv.totalExp;
+      if(tusuv.huvi !== 0)
+      {
+        document.querySelector(DOMstrings.percentageLabel).textContent = tusuv.huvi + "%";
+      }
+      else
+      {
+        document.querySelector(DOMstrings.percentageLabel).textContent = tusuv.huvi;
+      }
+      
+
+    },
     addListItem: function (item, type) {
       //Orlogo zarlagiin elementiig aguulsam HTML-iig beltgene.
       var html, list;
@@ -115,13 +135,13 @@ var financeController = (function () {
     },
     addItem: function (type, description, value) {
       var item, id;
-      if (data.items[type].length == 0) {
+      if (data.items[type].length === 0) {
         id = 1;
       } else {
         id = (data.items[type][data.items[type].length - 1]).id + 1;
       }
 
-      if (type == 'inc') {
+      if (type === 'inc') {
         item = new Income(id, description, value);
       } else {
         item = new Expense(id, description, value);
@@ -142,7 +162,7 @@ var appController = (function (uiController, financeController) {
     var controllerAddItem = function () {
     // 1. oruulah ugugdliih delgetsees olj avna.
     var input = uiController.getInput();
-    if(input.description != "" && input.value != ""){
+    if(input.description !== "" && input.value !== ""){
         // 2. Olj avsan ugugdluuddee sankhuugiin controllert damjuulj tend khadgalna.
         var item = financeController.addItem(
           input.type, 
@@ -159,7 +179,8 @@ var appController = (function (uiController, financeController) {
     var tusuv = financeController.tusviigAvah();
 
     // 6. Tusviin tootsoog delgetsend gargana.
-    console.log(tusuv);
+    
+    uiController.tusviigUzuuleh(tusuv);
 
   }
 
@@ -170,14 +191,21 @@ var appController = (function (uiController, financeController) {
     });
 
     document.addEventListener('keypress', function (event) {
-      if (event.keyCode == 13 || event.which == 13) {
+      if (event.keyCode === 13 || event.which === 13) {
         controllerAddItem();
       }
     });
   }
   return {
     init: function () {
+      uiController.tusviigUzuuleh({
+        tusuv: 0,
+          huvi: 0,
+          totalInc: 0,
+          totalExp: 0
+      });
       setupEventListeners();
+
     }
   }
 
