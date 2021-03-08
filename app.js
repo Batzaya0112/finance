@@ -25,14 +25,14 @@ var uiController = (function () {
       return DOMstrings;
     },
 
-    clearFeilds: function(){
-      var fields = document.querySelectorAll(DOMstrings.inputDescription + ", "  + DOMstrings.inputValue);
+    clearFeilds: function () {
+      var fields = document.querySelectorAll(DOMstrings.inputDescription + ", " + DOMstrings.inputValue);
 
       //list to array
-       var fieldsArr = Array.prototype.slice.call(fields);
-       fieldsArr.forEach(function(el, index, array){
-         el.value = "";
-       });
+      var fieldsArr = Array.prototype.slice.call(fields);
+      fieldsArr.forEach(function (el, index, array) {
+        el.value = "";
+      });
 
       fieldsArr[0].focus();
 
@@ -42,20 +42,18 @@ var uiController = (function () {
 
     },
 
-    tusviigUzuuleh: function(tusuv){
+    tusviigUzuuleh: function (tusuv) {
 
       document.querySelector(DOMstrings.tusuvLabel).textContent = tusuv.tusuv;
       document.querySelector(DOMstrings.incomeLabel).textContent = tusuv.totalInc;
       document.querySelector(DOMstrings.expeseLabel).textContent = tusuv.totalExp;
-      if(tusuv.huvi !== 0)
-      {
+      if (tusuv.huvi !== 0) {
         document.querySelector(DOMstrings.percentageLabel).textContent = tusuv.huvi + "%";
       }
-      else
-      {
+      else {
         document.querySelector(DOMstrings.percentageLabel).textContent = tusuv.huvi;
       }
-      
+
 
     },
     addListItem: function (item, type) {
@@ -107,31 +105,41 @@ var financeController = (function () {
     this.description = description;
     this.value = value;
   }
-  var calculateTotal = function(type){
+  var calculateTotal = function (type) {
     var sum = 0;
-    data.items[type].forEach(function(el){
+    data.items[type].forEach(function (el) {
       sum = sum + el.value;
     });
     data.totals[type] = sum;
   }
   return {
-    tusuvTootsooloh: function(){
-        //Niit orlogo, zarlagiig tootsoolno
-        calculateTotal('inc');
-        calculateTotal('exp');
-        //Tusviig shineer tootsoolno
-        data.tusuv = data.totals.inc - data.totals.exp;
-        // Orlogo zarlagiin huviig tootsoolno
-        data.huvi = Math.round((data.totals.exp / data.totals.inc) * 100);
+    tusuvTootsooloh: function () {
+      //Niit orlogo, zarlagiig tootsoolno
+      calculateTotal('inc');
+      calculateTotal('exp');
+      //Tusviig shineer tootsoolno
+      data.tusuv = data.totals.inc - data.totals.exp;
+      // Orlogo zarlagiin huviig tootsoolno
+      data.huvi = Math.round((data.totals.exp / data.totals.inc) * 100);
 
     },
-    tusviigAvah: function(){
-        return {
-          tusuv: data.tusuv,
-          huvi: data.huvi,
-          totalInc: data.totals.inc,
-          totalExp: data.totals.exp
-        }
+    tusviigAvah: function () {
+      return {
+        tusuv: data.tusuv,
+        huvi: data.huvi,
+        totalInc: data.totals.inc,
+        totalExp: data.totals.exp
+      }
+    },
+    // data item dotroos songoson idtei medeelliig ustgana.
+    deleteItem: function (type, id) {
+      var ids = data.items[type].map(function (el) {
+        return el.id;
+      });
+      var index = ids.indexOf(id);
+      if (indes !== -1) {
+        data.items[type].splice(index, 1);
+      }
     },
     addItem: function (type, description, value) {
       var item, id;
@@ -150,7 +158,7 @@ var financeController = (function () {
       data.items[type].push(item);
       return item;
     },
-    seeData: function(){
+    seeData: function () {
       return data;
     }
   }
@@ -159,18 +167,18 @@ var financeController = (function () {
 //eventListner bolon zavsriin code
 var appController = (function (uiController, financeController) {
 
-    var controllerAddItem = function () {
+  var controllerAddItem = function () {
     // 1. oruulah ugugdliih delgetsees olj avna.
     var input = uiController.getInput();
-    if(input.description !== "" && input.value !== ""){
-        // 2. Olj avsan ugugdluuddee sankhuugiin controllert damjuulj tend khadgalna.
-        var item = financeController.addItem(
-          input.type, 
-          input.description, 
-          input.value);
-          // 3. Olj avsan ugugdluudee veb deerkh tokhirokh khesegt n gargana.
-          uiController.addListItem(item, input.type);
-          uiController.clearFeilds();
+    if (input.description !== "" && input.value !== "") {
+      // 2. Olj avsan ugugdluuddee sankhuugiin controllert damjuulj tend khadgalna.
+      var item = financeController.addItem(
+        input.type,
+        input.description,
+        input.value);
+      // 3. Olj avsan ugugdluudee veb deerkh tokhirokh khesegt n gargana.
+      uiController.addListItem(item, input.type);
+      uiController.clearFeilds();
     }
     // 4. Tusviig tootsoolno/
     financeController.tusuvTootsooloh();
@@ -179,7 +187,7 @@ var appController = (function (uiController, financeController) {
     var tusuv = financeController.tusviigAvah();
 
     // 6. Tusviin tootsoog delgetsend gargana.
-    
+
     uiController.tusviigUzuuleh(tusuv);
 
   }
@@ -200,9 +208,9 @@ var appController = (function (uiController, financeController) {
     init: function () {
       uiController.tusviigUzuuleh({
         tusuv: 0,
-          huvi: 0,
-          totalInc: 0,
-          totalExp: 0
+        huvi: 0,
+        totalInc: 0,
+        totalExp: 0
       });
       setupEventListeners();
 
