@@ -11,7 +11,8 @@ var uiController = (function () {
     tusuvLabel: ".budget__value",
     incomeLabel: ".budget__income--value",
     expeseLabel: ".budget__expenses--value",
-    percentageLabel: ".budget__expenses--percentage"
+    percentageLabel: ".budget__expenses--percentage",
+    containerDiv: ".container"
   };
   return {
     getInput: function () {
@@ -61,14 +62,14 @@ var uiController = (function () {
       var html, list;
       if (type == 'inc') {
         list = DOMstrings.incomeList;
-        html = '<div class="item clearfix" id="income-%id%"><div div class="item__description" >%description%</div><div div class="right clearfix" ><div class="item__value">+ %value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div >';
+        html = '<div class="item clearfix" id="inc-%id%"><div div class="item__description" >%description%</div><div div class="right clearfix" ><div class="item__value">+ %value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div >';
       } else {
         list = DOMstrings.expenseList;
-        html = '<div class="item clearfix" id="expense-%id%"><div div class="item__description" >%description%</div><div class="right clearfix"><div class="item__value">- %value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div> ';
+        html = '<div class="item clearfix" id="exp-%id%"><div div class="item__description" >%description%</div><div class="right clearfix"><div class="item__value">- %value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div> ';
       }
       //Ter HTM dotroo orlogo zarlagiin utguudiig replace ashiglan uurchulj ugnu.
 
-      html = html.replace('%d%', item.id);
+      html = html.replace('%id%', item.id);
       html = html.replace('%description%', item.description);
       html = html.replace('%value%', item.value);
       //Beltgesen HTML ee DOM ruu hiij ugnu
@@ -137,7 +138,7 @@ var financeController = (function () {
         return el.id;
       });
       var index = ids.indexOf(id);
-      if (indes !== -1) {
+      if (index !== -1) {
         data.items[type].splice(index, 1);
       }
     },
@@ -202,6 +203,21 @@ var appController = (function (uiController, financeController) {
       if (event.keyCode === 13 || event.which === 13) {
         controllerAddItem();
       }
+    });
+    document.querySelector(DOM.containerDiv).addEventListener('click', function (event) {
+      var id = event.target.parentNode.parentNode.parentNode.parentNode.id;
+      if (id) {
+        var arr = id.split("-");
+        var type = arr[0];
+        var itemId = parseInt(arr[1]);
+        // 1.Sankhuugiin modulaas type, id-g ashiglaad ustgana.
+        financeController.deleteItem(type, itemId);
+
+        // 2.Delgets deerees tuhain id-tai elemtiig ustana.
+
+        // 3.Uldegdel tootsoog shinechilj haruulna.
+      }
+
     });
   }
   return {
