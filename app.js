@@ -57,6 +57,10 @@ var uiController = (function () {
 
 
     },
+    deleteListItem: function(id){
+      var el = document.getElementById(id);
+      el.parentNode.removeChild(el);
+    },
     addListItem: function (item, type) {
       //Orlogo zarlagiin elementiig aguulsam HTML-iig beltgene.
       var html, list;
@@ -214,7 +218,7 @@ var appController = (function (uiController, financeController) {
         financeController.deleteItem(type, itemId);
 
         // 2.Delgets deerees tuhain id-tai elemtiig ustana.
-
+        uiController.deleteListItem(id);
         // 3.Uldegdel tootsoog shinechilj haruulna.
       }
 
