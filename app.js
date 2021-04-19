@@ -13,7 +13,8 @@ var uiController = (function () {
     expeseLabel: ".budget__expenses--value",
     percentageLabel: ".budget__expenses--percentage",
     containerDiv: ".container",
-    expencePercentageLabel: ".item__percentage"
+    expencePercentageLabel: ".item__percentage",
+    dateLabel: ".budget__title--month"
   };
 
   var nodeListForEach = function (list, callback) {
@@ -21,8 +22,40 @@ var uiController = (function () {
       callback(list[i], i);
     }
   };
+  var formatMoney = function (number, type) {
+    number = "" + number;
+    var x = number
+      .split("")
+      .reverse()
+      .join("");
+    var y = "";
+    var count = 1;
+    for (var i = 0; i < x.length; i++) {
+      y = y + x[i];
+      if (count % 3 === 0) y = y + ",";
+      count++;
+    }
+    var z = y
+      .split("")
+      .reverse()
+      .join("");
 
+    if (z[0] === ",") {
+      z = z.substr(1, z.length - 1);
+    }
+    if (type === "inc") {
+      z = "+ " + z;
+    }
+    else {
+      z = "- " + z;
+    }
+    return z;
+  }
   return {
+    displayDate: function () {
+      var today = new Date();
+      document.querySelector(DOMstrings.dateLabel).textContent = today.getFullYear() + " оны " + today.getMonth() + "-р сарын өрхийн санхүү";
+    },
     getInput: function () {
       return {
         type: document.querySelector(DOMstrings.inputType).value,
@@ -37,7 +70,7 @@ var uiController = (function () {
 
       // element bolgonii khuvid zarlagiin khuviig massivaas avch shivj oruulakh
       nodeListForEach(elements, function (el, index) {
-        el.textContent = allPercentages[index];
+        el.textContent = allPercentages[index] + "%";
       });
     },
     getDOMstrings: function () {
@@ -62,38 +95,41 @@ var uiController = (function () {
     },
 
     tusviigUzuuleh: function (tusuv) {
-
-      document.querySelector(DOMstrings.tusuvLabel).textContent = tusuv.tusuv;
-      document.querySelector(DOMstrings.incomeLabel).textContent = tusuv.totalInc;
-      document.querySelector(DOMstrings.expeseLabel).textContent = tusuv.totalExp;
+      var type;
+      if (tusuv.tusuv > 0) type = 'inc';
+      else type = 'exp';
+      document.querySelector(DOMstrings.tusuvLabel).textContent = formatMoney(tusuv.tusuv, type);
+      document.querySelector(DOMstrings.incomeLabel).textContent = formatMoney(tusuv.totalInc, 'inc');
+      document.querySelector(DOMstrings.expeseLabel).textContent = formatMoney(tusuv.totalExp, 'exp');
       if (tusuv.huvi !== 0) {
         document.querySelector(DOMstrings.percentageLabel).textContent = tusuv.huvi + "%";
       }
       else {
         document.querySelector(DOMstrings.percentageLabel).textContent = tusuv.huvi;
       }
-
-
     },
+
     deleteListItem: function (id) {
       var el = document.getElementById(id);
       el.parentNode.removeChild(el);
     },
+
     addListItem: function (item, type) {
       //Orlogo zarlagiin elementiig aguulsam HTML-iig beltgene.
       var html, list;
       if (type == 'inc') {
         list = DOMstrings.incomeList;
-        html = '<div class="item clearfix" id="inc-%id%"><div div class="item__description" >%description%</div><div div class="right clearfix" ><div class="item__value">+ %value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div >';
+        html = '<div class="item clearfix" id="inc-%id%"><div div class="item__description" >%description%</div><div div class="right clearfix" ><div class="item__value"> %value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div >';
       } else {
         list = DOMstrings.expenseList;
-        html = '<div class="item clearfix" id="exp-%id%"><div div class="item__description" >%description%</div><div class="right clearfix"><div class="item__value">- %value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div> ';
+        html = '<div class="item clearfix" id="exp-%id%"><div div class="item__description" >%description%</div><div class="right clearfix"><div class="item__value"> %value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div> ';
       }
       //Ter HTM dotroo orlogo zarlagiin utguudiig replace ashiglan uurchulj ugnu.
 
       html = html.replace('%id%', item.id);
       html = html.replace('%description%', item.description);
-      html = html.replace('%value%', item.value);
+      html = html.replace('%value%', formatMoney(item.value, type));
+
       //Beltgesen HTML ee DOM ruu hiij ugnu
       document.querySelector(list).insertAdjacentHTML('beforeend', html);
     }
@@ -281,6 +317,7 @@ var appController = (function (uiController, financeController) {
   }
   return {
     init: function () {
+      uiController.displayDate()
       uiController.tusviigUzuuleh({
         tusuv: 0,
         huvi: 0,
