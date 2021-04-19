@@ -56,6 +56,13 @@ var uiController = (function () {
       var today = new Date();
       document.querySelector(DOMstrings.dateLabel).textContent = today.getFullYear() + " оны " + today.getMonth() + "-р сарын өрхийн санхүү";
     },
+    changeType: function () {
+      var fields = document.querySelectorAll(DOMstrings.inputType + ', ' + DOMstrings.inputDescription + ', ' + DOMstrings.inputValue);
+      nodeListForEach(fields, function (el) {
+        el.classList.toggle('red-focus');
+      });
+      document.querySelector(DOMstrings.addBtn).classList.toggle("red");
+    },
     getInput: function () {
       return {
         type: document.querySelector(DOMstrings.inputType).value,
@@ -299,6 +306,8 @@ var appController = (function (uiController, financeController) {
         controllerAddItem();
       }
     });
+    document.querySelector(DOM.inputType).addEventListener('change', uiController.changeType);
+
     document.querySelector(DOM.containerDiv).addEventListener('click', function (event) {
       var id = event.target.parentNode.parentNode.parentNode.parentNode.id;
       if (id) {
