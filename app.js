@@ -54,7 +54,7 @@ var uiController = (function () {
   return {
     displayDate: function () {
       var today = new Date();
-      document.querySelector(DOMstrings.dateLabel).textContent = today.getFullYear() + " оны " + today.getMonth() + "-р сарын өрхийн санхүү";
+      document.querySelector(DOMstrings.dateLabel).textContent = today.getFullYear() + " оны " + (today.getMonth() + 1) + "-р сарын өрхийн санхүү";
     },
     changeType: function () {
       var fields = document.querySelectorAll(DOMstrings.inputType + ', ' + DOMstrings.inputDescription + ', ' + DOMstrings.inputValue);
