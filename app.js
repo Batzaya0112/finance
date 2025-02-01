@@ -53,8 +53,11 @@ var uiController = (function () {
   }
   return {
     displayDate: function () {
-      var today = new Date();
-      document.querySelector(DOMstrings.dateLabel).textContent = today.getFullYear() + " оны " + (today.getMonth() + 1) + "-р сарын өрхийн санхүү";
+      //var today = new Date();
+      //document.querySelector(DOMstrings.dateLabel).textContent = today.getFullYear() + " оны " + (today.getMonth() + 1) + "-р сарын өрхийн санхүү";
+      const options = { year: "numeric", month: "long" };
+      const formattedDate = new Intl.DateTimeFormat("mn-MN", options).format(new Date());
+      document.querySelector(DOMstrings.dateLabel).textContent = `${formattedDate} өрхийн санхүү`;
     },
     changeType: function () {
       var fields = document.querySelectorAll(DOMstrings.inputType + ', ' + DOMstrings.inputDescription + ', ' + DOMstrings.inputValue);
