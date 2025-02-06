@@ -107,7 +107,9 @@ var uiController = (function () {
     tusviigUzuuleh: function (tusuv) {
       var type;
       if (tusuv.tusuv > 0) type = 'inc';
-      else type = 'exp';
+      else if(tusuv.tusuv < 0) type = 'exp';
+      else type = 'neutral';
+      
       document.querySelector(DOMstrings.tusuvLabel).textContent = formatMoney(tusuv.tusuv, type);
       document.querySelector(DOMstrings.incomeLabel).textContent = formatMoney(tusuv.totalInc, 'inc');
       document.querySelector(DOMstrings.expeseLabel).textContent = formatMoney(tusuv.totalExp, 'exp');
