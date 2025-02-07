@@ -106,7 +106,10 @@ var uiController = (function () {
 
     tusviigUzuuleh: function (tusuv) {
       var type;
+      
       tusuv.tusuv = tusuv.tusuv === 0 ? 0 : tusuv.tusuv;
+      tusuv.tusuv = Math.abs(tusuv.tusuv);
+      
       if (tusuv.tusuv > 0) type = 'inc';
       else if(tusuv.tusuv < 0) type = 'exp';
       else type = 'neutral';
